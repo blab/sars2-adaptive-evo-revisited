@@ -1,0 +1,86 @@
+auspice_json_prefix: sars2
+
+# These parameters are only used by the `export_for_nextstrain` rule and shouldn't need to be modified.
+# To modify the s3 _source_ bucket, specify this directly in the `inputs` section of the config.
+# P.S. These are intentionally set as top-level keys as this allows command-line overrides.
+S3_DST_BUCKET: "nextstrain-ncov-private"
+S3_DST_COMPRESSION: "xz"
+S3_DST_ORIGINS: ["gisaid"]
+
+genes: ["ORF1a", "ORF1b", "S", "ORF3a", "E", "M", "ORF6", "ORF7a", "ORF7b", "ORF8", "N", "ORF9b"]
+use_nextalign: true
+include_hcov19_prefix: True
+
+files:
+  description: "nextstrain_profiles/nextstrain-gisaid/nextstrain_description.md"
+
+inputs:
+  - name: gisaid
+    metadata: "s3://nextstrain-ncov-private/metadata.tsv.zst"
+    aligned: "s3://nextstrain-ncov-private/aligned.fasta.zst"
+    skip_sanitize_metadata: true
+
+# Define locations for which builds should be created.
+# For each build we specify a subsampling scheme via an explicit key.
+# These subsampling schemes are defined at the bottom of this file.
+# (They override the defaults)
+# North America and Oceania are subsampled at the "division" level
+# Africa, Asia, Europe and South America are subsampled at the "country" level
+#
+# Auspice config is specified in rule auspice_config in export_for_nextstrain.smk
+builds:
+  global_all-time:
+    subsampling_scheme: nextstrain_global_all_time
+    title: Genomic epidemiology of SARS-CoV-2 with subsampling focused globally since pandemic start
+
+# remove sequences without division label in US
+filter:
+  exclude_where: "division='USA'"
+
+subsampling:
+  # Custom subsampling logic for global region over all-time
+  # 4000 total
+  # all regions equal except Oceania at 33%
+  nextstrain_global_all_time:
+    africa:
+      group_by: "country year month"
+      max_sequences: 750
+      exclude: "--exclude-where 'region!=Africa'"
+    asia:
+      group_by: "country year month"
+      max_sequences: 750
+      exclude: "--exclude-where 'region!=Asia'"
+    europe:
+      group_by: "country year month"
+      max_sequences: 750
+      exclude: "--exclude-where 'region!=Europe'"
+    north_america:
+      group_by: "division year month"
+      max_sequences: 750
+      exclude: "--exclude-where 'region!=North America'"
+    south_america:
+      group_by: "country year month"
+      max_sequences: 750
+      exclude: "--exclude-where 'region!=South America'"
+    oceania:
+      group_by: "division year month"
+      max_sequences: 250
+      exclude: "--exclude-where 'region!=Oceania'"
+
+# if different traits should be reconstructed for some builds, specify here
+# otherwise the default trait config in defaults/parameters.yaml will used
+traits:
+  global_all-time:
+    sampling_bias_correction: 2.5
+    columns: ["region"]
+
+
+# Define frequencies parameters
+# Target frequencies to "1m", "2m", "6m" and "all-time" builds
+# narrow_bandwidth = 0.019 or 7 days for "1m" and "2m"
+# narrow_bandwidth = 0.038 or 14 days for "6m" and "all-time"
+frequencies:
+  global_all-time:
+    min_date: "2020-01-01"
+    narrow_bandwidth: 0.038
+    recent_days_to_censor: 7
