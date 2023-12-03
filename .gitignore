@@ -27,7 +27,7 @@ my_profiles/*
 environment*
 
 # Snakemake state dir
-/.snakemake
+.snakemake/
 snakemake_log
 
 # Local config overrides

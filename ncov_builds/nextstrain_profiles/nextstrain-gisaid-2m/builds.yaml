@@ -12,7 +12,7 @@ use_nextalign: true
 include_hcov19_prefix: True
 
 files:
-  description: "nextstrain_profiles/nextstrain-gisaid/nextstrain_description.md"
+  description: "nextstrain_profiles/nextstrain-gisaid-2m/nextstrain_description.md"
 
 inputs:
   - name: gisaid
@@ -32,6 +32,21 @@ inputs:
 # Make builds with samples focused in a 2-month period (defined by min_date and max_date)
 # Build name is the end date
 builds:
+  2023-11_2m:
+    subsampling_scheme: nextstrain_global_2m
+    title: Genomic epidemiology of SARS-CoV-2 with subsampling focused globally between 2023-09-01 and 2023-11-01
+    min_date: 2023-09-01
+    max_date: 2023-11-01
+  2023-09_2m:
+    subsampling_scheme: nextstrain_global_2m
+    title: Genomic epidemiology of SARS-CoV-2 with subsampling focused globally between 2023-07-01 and 2023-09-01
+    min_date: 2023-07-01
+    max_date: 2023-09-01
+  2023-07_2m:
+    subsampling_scheme: nextstrain_global_2m
+    title: Genomic epidemiology of SARS-CoV-2 with subsampling focused globally between 2023-05-01 and 2023-07-01
+    min_date: 2023-05-01
+    max_date: 2023-07-01
   2023-05_2m:
     subsampling_scheme: nextstrain_global_2m
     title: Genomic epidemiology of SARS-CoV-2 with subsampling focused globally between 2023-03-01 and 2023-05-01
@@ -316,5 +331,20 @@ frequencies:
   2023-05_2m:
     min_date: "2023-03-01"
     max_date: "2023-05-01"
+    narrow_bandwidth: 0.019
+    recent_days_to_censor: 7
+  2023-07_2m:
+    min_date: "2023-05-01"
+    max_date: "2023-07-01"
+    narrow_bandwidth: 0.019
+    recent_days_to_censor: 7
+  2023-09_2m:
+    min_date: "2023-07-01"
+    max_date: "2023-09-01"
+    narrow_bandwidth: 0.019
+    recent_days_to_censor: 7
+  2023-11_2m:
+    min_date: "2023-09-01"
+    max_date: "2023-11-01"
     narrow_bandwidth: 0.019
     recent_days_to_censor: 7
